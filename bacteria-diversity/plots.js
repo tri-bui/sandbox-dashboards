@@ -38,7 +38,7 @@ function cleanValue(val, feat) {
 function plotMetadata(vals, feat) {
 
     // Plot layout and data
-    title = d3.select('#' + feat.slice(0, 3)).text();
+    title = d3.select("#" + feat.slice(0, 3)).text();
     let layout = {
         title: title + ' of Volunteers',
         yaxis: {title: 'Count'},
@@ -56,7 +56,7 @@ function plotMetadata(vals, feat) {
 
         // Get count for each category
         let counts = {};
-        vals.forEach((val) => {
+        vals.forEach(val => {
             if (counts[val]) {counts[val]++;}
             else {counts[val] = 1;}
         });
@@ -68,7 +68,7 @@ function plotMetadata(vals, feat) {
     };
 
     // Plot data
-    Plotly.newPlot('metadata-plot', [trace], layout, {responsive: true});
+    Plotly.newPlot("metadata-plot", [trace], layout, {responsive: true});
 }
 
 
@@ -77,21 +77,9 @@ function plotMetadata(vals, feat) {
  * values for the selected metadata feature.
  */
 function metadataHandler() {
-
-    // Get user input
-    let feat = d3.select("#metadata").property("value");
-
-    // Get feature from data
-    let vals = [];
-    data["metadata"].forEach(person => {
-
-        // Clean value and add to array
-        let val = cleanValue(person[feat], feat);
-        vals.push(val);
-    });
-
-    // Plot data
-    plotMetadata(vals, feat);
+    let feat = d3.select("#metadata").property("value"); // selected option
+    let vals = data['metadata'].map(person => cleanValue(person[feat], feat)); // clean values
+    plotMetadata(vals, feat); // plot data
 }
 
 
