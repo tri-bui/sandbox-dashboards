@@ -114,28 +114,26 @@ function plotSample(sampId, wfreq) {
 
 
 /**
- * 
+ * Handler for the sample select input. Upon change to the input, generate 
+ * a bar plot for the top 10 OTUs and a gauge chart for the volunteer's 
+ * washing frequency.
  */
 function sampleHandler() {
+    let sampId = d3.select("#sample").property("value"); // selected option
+    let metadata = data['metadata'].filter(samp => samp['id'] == sampId)[0]; // selected sample
+    let wfreq = cleanValue(metadata['wfreq'], 'wfreq'); // washing frequency
 
-    // Get user input
-    let sampId = d3.select("#sample").property("value");
-    console.log(data);
-    
-    // Extract metadata
-    let metadata = data["metadata"].filter(samp => samp["id"] == sampId)[0];
-    let wfreq = cleanValue(metadata["wfreq"], "wfreq"); // wash frequency
-    // Fill demographic card with information
+    // Fill volunteer card with their demographic information
     d3.select("#sample-info").html(`<span class="card-text">
-        Ethnicity : ${cleanValue(metadata["ethnicity"], "ethnicity")} <br />
-        Gender : ${cleanValue(metadata["gender"], "gender")} <br />
-        Age : ${cleanValue(metadata["age"], "age")} <br />
-        Location : ${cleanValue(metadata["location"], "location")} <br />
-        Belly Button Type : ${cleanValue(metadata["bbtype"], "bbtype")} <br />
+        Ethnicity : ${cleanValue(metadata['ethnicity'], 'ethnicity')} <br />
+        Gender : ${cleanValue(metadata['gender'], 'gender')} <br />
+        Age : ${cleanValue(metadata['age'], 'age')} <br />
+        Location : ${cleanValue(metadata['location'], 'location')} <br />
+        Belly Button Type : ${cleanValue(metadata['bbtype'], 'bbtype')} <br />
         Wash Frequency : ${wfreq} </span>`
     );
 
-    // Plot top bacterial species and wash frequency gauge
+    // Bar and guage plots
     plotSample(sampId, wfreq);
 }
 
@@ -161,6 +159,7 @@ d3.json("samples.json").then(response => {
 
     // Store data
     data = response;
+    console.log(data);
 
     // Initialize page
     init();
