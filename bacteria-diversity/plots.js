@@ -1,4 +1,26 @@
-/*** Plots ***/
+/*** Data fill ***/
+
+
+/**
+ * Clean a value to be consistent depending on the metadata feature.
+ * @param {str or num} val - metadata value to clean
+ * @param {str} feat - ethnicity, gender, age, location, bbtype, or wfreq
+ * @returns {str or num} cleaned metadata value
+ */
+function cleanValue(val, feat) {
+    if (!val) { // convert null values to "Unknown"
+        val = 'Unknown';
+    } else if (feat == 'gender' | feat == 'bbtype') { // capitalize gender and bbtype
+        val = val[0].toUpperCase() + val.slice(1);
+    } else if (feat == 'ethnicity') { // remove parentheses and update multiple ethnicities to "Mixed"
+        val = val.split('(')[0];
+        if (val.includes('/')) {val = 'Mixed';};
+    } else if (feat == 'location') { // shorten location to US state or foreign country code
+        val = val.match(/[A-Z]{2}/);
+        if (val) {val = val[0];};
+    };
+    return val;
+}
 
 
 /**
@@ -9,6 +31,32 @@ function fillSelect() {
         d3.select("#sample").append("option").attr("value", sid).text(sid);
     });
 }
+
+
+/**
+ * Fill the location card with locations and their abbreviations.
+ */
+function fillCard() {
+    let span = '<span class="card-text">'; // text to insert
+    let locations = {}; // to hold unique locations
+
+    // Map locations to their abbreviations
+    data['metadata'].forEach(person => {
+        let name = person['location'];
+        let abbr = cleanValue(name, 'location');
+        if (name && name !== abbr) {
+            locations[abbr] = name.replace('/', ',').replace(',', ', ');
+        }
+    });
+
+    // Add locations to the card
+    locations = Object.entries(locations).map(([key, val]) => key + " : " + val + " <br />").sort();
+    locations.forEach(loc => {span += loc;});
+    d3.select("#location-key").html(span + "</span>");
+}
+
+
+/*** Plots ***/
 
 
 /**
@@ -65,28 +113,6 @@ function plotSample(sampId, wfreq) {
 
 
 /**
- * Clean a value to be consistent depending on the metadata feature.
- * @param {str or num} val - metadata value to clean
- * @param {str} feat - ethnicity, gender, age, location, bbtype, or wfreq
- * @returns {str or num} cleaned metadata value
- */
-function cleanValue(val, feat) {
-    if (!val) { // convert null values to "Unknown"
-        val = 'Unknown';
-    } else if (feat == 'gender' | feat == 'bbtype') { // capitalize gender and bbtype
-        val = val[0].toUpperCase() + val.slice(1);
-    } else if (feat == 'ethnicity') { // remove parentheses and update multiple ethnicities to "Mixed"
-        val = val.split('(')[0];
-        if (val.includes('/')) {val = 'Mixed';};
-    } else if (feat == 'location') { // shorten location to US state or foreign country code
-        val = val.match(/[A-Z]{2}/);
-        if (val) {val = val[0];};
-    };
-    return val;
-}
-
-
-/**
  * Plot a histogram of the values if the metadata feature is numeric or a 
  * barchart if the feature is categorical.
  * @param {arr[str or num]} vals - values to plot
@@ -127,7 +153,7 @@ function plotMetadata(vals, feat) {
 }
 
 
-/*** Event Handlers ***/
+/*** Event handlers ***/
 
 
 /**
@@ -171,6 +197,7 @@ function metadataHandler() {
  */
 function init() {
     fillSelect(); // fill sample dropdown menu with volunteer IDs
+    fillCard(); // fill location card with locations and their abbreviations
     sampleHandler(); // plot first sample on visit
     metadataHandler(); // plot first metadata feature on visit
 }
