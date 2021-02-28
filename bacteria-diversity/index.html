@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bacteria Diversity</title>
+
+    <!-- Bootstrap -->
+    <!-- <link 
+        rel="stylesheet" 
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+        crossorigin="anonymous"
+    /> -->
+    <link 
+        rel="stylesheet" 
+        href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/materia/bootstrap.min.css" 
+        integrity="sha384-B4morbeopVCSpzeC1c4nyV0d0cqvlSAfyXVfrPJa25im5p+yEN/YmhlgQP/OyMZD" 
+        crossorigin="anonymous"
+    />
+</head>
+<body>
+    <div class="jumbotron bg-success text-white text-center">
+        <h1>Navel Biodiversity Dashboard</h1>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row m-5">
+
+            <!-- Sample -->
+            <div class="col-lg-2">
+
+                <!-- Sample select -->
+                <div class="form-group border rounded p-3">
+                    <label for="sample">Select volunteer ID</label>
+                    <select id="sample" class="form-control">
+                    </select>
+                </div>
+
+                <!-- Sample info -->
+                <div class="card">
+                    <h6 class="card-header bg-success text-white">
+                        Demographic Information
+                    </h6>
+                    <div id="sample-info" class="card-body"></div>
+                </div>
+            </div>
+
+            <!-- Sample plots -->
+            <div class="col-lg-6"><div id="sample-plot"></div></div>
+            <div class="col-lg-4"><div id="wfreq-plot"></div></div>
+        </div>
+
+        <div class="row m-5">
+
+            <!-- Metadata -->
+            <div class="col-lg-3">
+
+                <!-- Metadata select -->
+                <div class="form-group border rounded p-3">
+                    <label for="metadata">Select metadata feature</label>
+                    <select id="metadata" class="form-control">
+                        <option id="eth", value="ethnicity">Ethnicity</option>
+                        <option id="gen" value="gender">Gender</option>
+                        <option id="age" value="age">Age</option>
+                        <option id="loc" value="location">Location</option>
+                        <option id="bbt" value="bbtype">Belly Button</option>
+                        <option id="wfr" value="wfreq">Wash Frequency</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Metadata plot -->
+            <div class="col-lg-9"><div id="metadata-plot"></div></div>
+        </div>
+    </div>
+    
+    <!-- Javascript -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="plots.js"></script>
+</body>
+</html>
