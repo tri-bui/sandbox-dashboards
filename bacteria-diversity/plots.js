@@ -5,26 +5,17 @@
  * @returns {str or num} cleaned metadata value
  */
 function cleanValue(val, feat) {
-
-    // Convert null values to "Unknown"
-    if (!val) { 
+    if (!val) { // convert null values to "Unknown"
         val = 'Unknown';
-
-    // Capitalize gender and bbtype
-    } else if (feat == 'gender' | feat == 'bbtype') {
+    } else if (feat == 'gender' | feat == 'bbtype') { // capitalize gender and bbtype
         val = val[0].toUpperCase() + val.slice(1);
-
-    // Clean ethnicity
-    } else if (feat == 'ethnicity') { 
-        val = val.split('(')[0]; // remove content inside parentheses
-        if (val.includes('/')) {val = 'Mixed';}; // update multiple ethnicities to "mixed"
-
-    // Shorten location to US state or foreign country code
-    } else if (feat == 'location') {
-        val = val.match(/[A-Z]{2}/); // extract 2 capital letters
-        if (val) {val = val[0];}; // get matched string
+    } else if (feat == 'ethnicity') { // remove parentheses and update multiple ethnicities to "Mixed"
+        val = val.split('(')[0];
+        if (val.includes('/')) {val = 'Mixed';};
+    } else if (feat == 'location') { // shorten location to US state or foreign country code
+        val = val.match(/[A-Z]{2}/);
+        if (val) {val = val[0];};
     };
-
     return val;
 }
 
@@ -38,30 +29,26 @@ function cleanValue(val, feat) {
 function plotMetadata(vals, feat) {
 
     // Plot layout and data
-    title = d3.select("#" + feat.slice(0, 3)).text();
     let layout = {
-        title: title + ' of Volunteers',
-        yaxis: {title: 'Count'},
+        title: d3.select("#" + feat.slice(0, 3)).text() + ' of Volunteers', 
+        yaxis: {title: 'Count'}, 
         xaxis: {title: title}
     };
     let trace = {};
 
-    // Plot a histogram for numeric features
-    if (feat == 'age' | feat == 'wfreq') {
+    // Define trace
+    if (feat == 'age' | feat == 'wfreq') { // histogram for numeric features
         trace['x'] = vals;
         trace['type'] = 'histogram';
-
-    // Plot a barchart for categorical features
-    } else {
-
-        // Get count for each category
+    } else { // barchart for categorical features
+        // Category counts
         let counts = {};
         vals.forEach(val => {
             if (counts[val]) {counts[val]++;}
             else {counts[val] = 1;}
         });
 
-        // Define trace
+        // Trace
         trace['x'] = Object.keys(counts);
         trace['y'] = Object.values(counts);
         trace['type'] = 'bar';
@@ -84,10 +71,10 @@ function metadataHandler() {
 
 
 /**
- * Fill the select input with volunteer IDs from the data.
+ * Fill the sample select input with volunteer IDs from the data.
  */
 function fillSelect() {
-    data["names"].forEach(sid => {
+    data['names'].forEach(sid => {
         d3.select("#sample").append("option").attr("value", sid).text(sid);
     });
 }
