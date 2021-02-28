@@ -1,3 +1,47 @@
+/*** Plots ***/
+
+
+/**
+ * Fill the sample select input with volunteer IDs from the data.
+ */
+function fillSelect() {
+    data['names'].forEach(sid => {
+        d3.select("#sample").append("option").attr("value", sid).text(sid);
+    });
+}
+
+
+/**
+ * Plot the top 10 bacterial species (OTU) found in a volunteer's navel sample 
+ * and the count for each species. There may be less than 10 if the sample did 
+ * not contain 10 OTUs.
+ * @param {str} sampId - ID of sample
+ */
+function plotSample(sampId, wfreq) {
+    let sample = data['samples'].filter(samp => samp['id'] == sampId)[0]; // selected sample
+    
+    // Top 10 OTUs
+    let z = sample['otu_labels'].slice(0, 10).reverse().map(lab => lab.replaceAll(';', ' | ')); // species label
+    let y = sample['otu_ids'].slice(0, 10).reverse().map(oid => `OID ${oid.toString()} `); // species IDs
+    let x = sample['sample_values'].slice(0, 10).reverse(); // species counts
+
+    // Plot horizontal barchart
+    bar_layout = {title: 'Top Bacterial Species in Sample'};
+    bar_trace = {x: x, y: y, text: z, type: 'bar', orientation: 'h'};
+    Plotly.newPlot('otu-plot', [bar_trace], bar_layout, {responsive: true});
+
+    // Plot gauge chart
+    gauge_layout = {title: 'Washing Frequency', margin: {r: 1, l: 1}};
+    gauge_trace = {
+        value: wfreq, 
+        title: 'Scrubs per week', 
+        type: 'indicator', 
+        mode: 'gauge+number'
+    };
+    Plotly.newPlot("wfreq-plot", [gauge_trace], gauge_layout, {responsive: true});
+}
+
+
 /**
  * Clean a value to be consistent depending on the metadata feature.
  * @param {str or num} val - metadata value to clean
@@ -61,56 +105,7 @@ function plotMetadata(vals, feat) {
 }
 
 
-/**
- * Handler for the metadata select input. Upon change to the input, plot the 
- * values for the selected metadata feature.
- */
-function metadataHandler() {
-    let feat = d3.select("#metadata").property("value"); // selected option
-    let vals = data['metadata'].map(person => cleanValue(person[feat], feat)); // clean values
-    plotMetadata(vals, feat); // plot data
-}
-
-
-/**
- * Fill the sample select input with volunteer IDs from the data.
- */
-function fillSelect() {
-    data['names'].forEach(sid => {
-        d3.select("#sample").append("option").attr("value", sid).text(sid);
-    });
-}
-
-
-/**
- * Plot the top 10 bacterial species (OTU) found in a volunteer's navel sample 
- * and the count for each species. There may be less than 10 if the sample did 
- * not contain 10 OTUs.
- * @param {str} sampId - ID of sample
- */
-function plotSample(sampId, wfreq) {
-    let sample = data['samples'].filter(samp => samp['id'] == sampId)[0]; // selected sample
-    
-    // Top 10 OTUs
-    let z = sample['otu_labels'].slice(0, 10).reverse().map(lab => lab.replaceAll(';', ' | ')); // species label
-    let y = sample['otu_ids'].slice(0, 10).reverse().map(oid => `OID ${oid.toString()} `); // species IDs
-    let x = sample['sample_values'].slice(0, 10).reverse(); // species counts
-
-    // Plot horizontal barchart
-    bar_layout = {title: 'Top Bacterial Species in Sample'};
-    bar_trace = {x: x, y: y, text: z, type: 'bar', orientation: 'h'};
-    Plotly.newPlot('otu-plot', [bar_trace], bar_layout, {responsive: true});
-
-    // Plot gauge chart
-    gauge_layout = {title: 'Washing Frequency', margin: {r: 1, l: 1}};
-    gauge_trace = {
-        value: wfreq, 
-        title: 'Scrubs per week', 
-        type: 'indicator', 
-        mode: 'gauge+number'
-    };
-    Plotly.newPlot("wfreq-plot", [gauge_trace], gauge_layout, {responsive: true});
-}
+/*** Event Handlers ***/
 
 
 /**
@@ -139,7 +134,18 @@ function sampleHandler() {
 
 
 /**
- * Initialize the page.
+ * Handler for the metadata select input. Upon change to the input, plot the 
+ * values for the selected metadata feature.
+ */
+function metadataHandler() {
+    let feat = d3.select("#metadata").property("value"); // selected option
+    let vals = data['metadata'].map(person => cleanValue(person[feat], feat)); // clean values
+    plotMetadata(vals, feat); // plot data
+}
+
+
+/**
+ * Initialize the page on visit.
  */
 function init() {
     fillSelect(); // fill sample dropdown menu with volunteer IDs
@@ -148,9 +154,10 @@ function init() {
 }
 
 
-// Initialize variable to store data
-var data;
+/*** Logic ***/
 
+
+var data; // to store data
 d3.json('samples.json').then(response => {
     console.log(response);
     data = response; // store data
