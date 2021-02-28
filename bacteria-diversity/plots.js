@@ -8,19 +8,19 @@ function cleanValue(val, feat) {
 
     // Convert null values to "Unknown"
     if (!val) { 
-        val = "Unknown";
+        val = 'Unknown';
 
     // Capitalize gender and bbtype
-    } else if (feat == "gender" | feat == "bbtype") {
+    } else if (feat == 'gender' | feat == 'bbtype') {
         val = val[0].toUpperCase() + val.slice(1);
 
     // Clean ethnicity
-    } else if (feat == "ethnicity") { 
-        val = val.split("(")[0]; // remove content inside parentheses
-        if (val.includes("/")) {val = "Mixed";}; // update multiple ethnicities to "mixed"
+    } else if (feat == 'ethnicity') { 
+        val = val.split('(')[0]; // remove content inside parentheses
+        if (val.includes('/')) {val = 'Mixed';}; // update multiple ethnicities to "mixed"
 
     // Shorten location to US state or foreign country code
-    } else if (feat == "location") {
+    } else if (feat == 'location') {
         val = val.match(/[A-Z]{2}/); // extract 2 capital letters
         if (val) {val = val[0];}; // get matched string
     };
@@ -32,46 +32,43 @@ function cleanValue(val, feat) {
 /**
  * Plot a histogram of the values if the metadata feature is numeric or a 
  * barchart if the feature is categorical.
- * @param {arr[str or numeric]} vals - values to plot
- * @param {str} feat - ethnicity, gender, age, location, or wfreq
+ * @param {arr[str or num]} vals - values to plot
+ * @param {str} feat - ethnicity, gender, age, location, bbtype, or wfreq
  */
 function plotMetadata(vals, feat) {
 
     // Plot layout and data
-    title = d3.select("#" + feat.slice(0, 3)).text();
+    title = d3.select('#' + feat.slice(0, 3)).text();
     let layout = {
-        title: title + " of Volunteers",
-        yaxis: {title: "Count"},
+        title: title + ' of Volunteers',
+        yaxis: {title: 'Count'},
         xaxis: {title: title}
     };
     let trace = {};
 
     // Plot a histogram for numeric features
-    if (feat == "age" | feat == "wfreq") {
-        trace["x"] = vals;
-        trace["type"] = "histogram";
+    if (feat == 'age' | feat == 'wfreq') {
+        trace['x'] = vals;
+        trace['type'] = 'histogram';
 
     // Plot a barchart for categorical features
     } else {
 
         // Get count for each category
-        let val_obj = {};
-        for (let i = 0; i < vals.length; i++) {
-            if (val_obj[vals[i]]) {
-                val_obj[vals[i]]++;
-            } else {
-                val_obj[vals[i]] = 1;
-            };
-        };
+        let counts = {};
+        vals.forEach((val) => {
+            if (counts[val]) {counts[val]++;}
+            else {counts[val] = 1;}
+        });
 
         // Define trace
-        trace["x"] = Object.keys(val_obj);
-        trace["y"] = Object.values(val_obj);
-        trace["type"] = "bar";
+        trace['x'] = Object.keys(counts);
+        trace['y'] = Object.values(counts);
+        trace['type'] = 'bar';
     };
 
     // Plot data
-    Plotly.newPlot("metadata-plot", [trace], layout, {responsive: true});
+    Plotly.newPlot('metadata-plot', [trace], layout, {responsive: true});
 }
 
 
