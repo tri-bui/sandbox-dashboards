@@ -101,10 +101,9 @@ function plotSample(sampId, wfreq) {
     Plotly.newPlot("top-plot", [bar_trace], bar_layout, {responsive: true});
 
     // Gauge chart for washing frequency
-    gauge_layout = {title: 'Washing Frequency', margin: {r: 1, l: 1}};
+    gauge_layout = {title: 'Washing Frequency (Scrubs/Week)', margin: {r: 1, l: 1}};
     gauge_trace = {
         value: wfreq, 
-        title: 'Scrubs per week', 
         type: 'indicator', 
         mode: 'gauge+number'
     };
