@@ -12,25 +12,41 @@ function fillSelect() {
 
 
 /**
- * Plot the top 10 bacterial species (OTU) found in a volunteer's navel sample 
- * and the count for each species. There may be less than 10 if the sample did 
- * not contain 10 OTUs.
+ * Generate the following plots for the selected sample:
+ * 1. Bubble chart for all bacterial species (OTUs) in the volunteer's navel sample
+ * 2. Horizontal bar chart for the top 10 OTUs and their counts
+ * 3. Gauge chart for the volunteer's navel washing frequency
  * @param {str} sampId - ID of sample
+ * @param {num} wfreq - washing frequency of volunteer
  */
 function plotSample(sampId, wfreq) {
     let sample = data['samples'].filter(samp => samp['id'] == sampId)[0]; // selected sample
+    let oid = sample['otu_ids']
     
     // Top 10 OTUs
     let z = sample['otu_labels'].slice(0, 10).reverse().map(lab => lab.replaceAll(';', ' | ')); // species label
     let y = sample['otu_ids'].slice(0, 10).reverse().map(oid => `OID ${oid.toString()} `); // species IDs
     let x = sample['sample_values'].slice(0, 10).reverse(); // species counts
 
-    // Plot horizontal barchart
+    // Bubble chart for all OTUs in the sample
+    bubble_layout = {title: 'Sample OTUs', xaxis: {title: 'OID'}, yaxis: {title: 'Count'}};
+    bubble_trace = {
+        x: sample['otu_ids'], 
+        y: sample['sample_values'], 
+        mode: 'markers', 
+        marker: {
+            color: sample['sample_values'], 
+            size: sample['sample_values'].map(cnt => cnt / 5)
+        }
+    };
+    Plotly.newPlot("otu-plot", [bubble_trace], bubble_layout, {responsive: true});
+
+    // Horizontal bar chart for top 10 OTUs
     bar_layout = {title: 'Top Bacterial Species in Sample'};
     bar_trace = {x: x, y: y, text: z, type: 'bar', orientation: 'h'};
-    Plotly.newPlot('top-plot', [bar_trace], bar_layout, {responsive: true});
+    Plotly.newPlot("top-plot", [bar_trace], bar_layout, {responsive: true});
 
-    // Plot gauge chart
+    // Gauge chart for washing frequency
     gauge_layout = {title: 'Washing Frequency', margin: {r: 1, l: 1}};
     gauge_trace = {
         value: wfreq, 
