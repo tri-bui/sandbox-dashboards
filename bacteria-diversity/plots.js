@@ -29,8 +29,9 @@ function cleanValue(val, feat) {
 function plotMetadata(vals, feat) {
 
     // Plot layout and data
+    let title = d3.select("#" + feat.slice(0, 3)).text();
     let layout = {
-        title: d3.select("#" + feat.slice(0, 3)).text() + ' of Volunteers', 
+        title: title + ' of Volunteers', 
         yaxis: {title: 'Count'}, 
         xaxis: {title: title}
     };
@@ -41,6 +42,7 @@ function plotMetadata(vals, feat) {
         trace['x'] = vals;
         trace['type'] = 'histogram';
     } else { // barchart for categorical features
+
         // Category counts
         let counts = {};
         vals.forEach(val => {
@@ -81,36 +83,31 @@ function fillSelect() {
 
 
 /**
- * Plot the top 10 bacterial species found in a volunteer's navel sample and 
- * the count of each species.
+ * Plot the top 10 bacterial species (OTU) found in a volunteer's navel sample 
+ * and the count for each species. There may be less than 10 if the sample did 
+ * not contain 10 OTUs.
  * @param {str} sampId - ID of sample
  */
-function plotOtu(sampId, wfreq) {
-
-    // Get sample from ID
-    let sample = data["samples"].filter(samp => samp["id"] == sampId)[0];
+function plotSample(sampId, wfreq) {
+    let sample = data['samples'].filter(samp => samp['id'] == sampId)[0]; // selected sample
     
-    // OTU labels, IDs, and sample values
-    let z = sample["otu_labels"].slice(0, 10).reverse();
-    let y = sample["otu_ids"].slice(0, 10).reverse().map(oid => 
-        "OID " + oid.toString() + " ");
-    let x = sample["sample_values"].slice(0, 10).reverse();
+    // Top 10 OTUs
+    let z = sample['otu_labels'].slice(0, 10).reverse().map(lab => lab.replaceAll(';', ' | ')); // species label
+    let y = sample['otu_ids'].slice(0, 10).reverse().map(oid => `OID ${oid.toString()} `); // species IDs
+    let x = sample['sample_values'].slice(0, 10).reverse(); // species counts
 
     // Plot horizontal barchart
-    bar_layout = {title: "Top Bacterial Species in Sample"};
-    bar_trace = {x: x, y: y, type: "bar", orientation: "h"};
-    Plotly.newPlot("species-plot", [bar_trace], bar_layout, {responsive: true});
+    bar_layout = {title: 'Top Bacterial Species in Sample'};
+    bar_trace = {x: x, y: y, text: z, type: 'bar', orientation: 'h'};
+    Plotly.newPlot('otu-plot', [bar_trace], bar_layout, {responsive: true});
 
     // Plot gauge chart
-    gauge_layout = {
-        title: "Washing Frequency", 
-        margin: {r: 1, l: 1}
-    };
+    gauge_layout = {title: 'Washing Frequency', margin: {r: 1, l: 1}};
     gauge_trace = {
         value: wfreq, 
-        title: "Scrubs per week", 
-        type: "indicator", 
-        mode: "gauge+number"
+        title: 'Scrubs per week', 
+        type: 'indicator', 
+        mode: 'gauge+number'
     };
     Plotly.newPlot("wfreq-plot", [gauge_trace], gauge_layout, {responsive: true});
 }
@@ -139,7 +136,7 @@ function sampleHandler() {
     );
 
     // Plot top bacterial species and wash frequency gauge
-    plotOtu(sampId, wfreq);
+    plotSample(sampId, wfreq);
 }
 
 
