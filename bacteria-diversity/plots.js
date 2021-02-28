@@ -28,7 +28,7 @@ function plotSample(sampId, wfreq) {
     // Plot horizontal barchart
     bar_layout = {title: 'Top Bacterial Species in Sample'};
     bar_trace = {x: x, y: y, text: z, type: 'bar', orientation: 'h'};
-    Plotly.newPlot('otu-plot', [bar_trace], bar_layout, {responsive: true});
+    Plotly.newPlot('top-plot', [bar_trace], bar_layout, {responsive: true});
 
     // Plot gauge chart
     gauge_layout = {title: 'Washing Frequency', margin: {r: 1, l: 1}};
