@@ -139,34 +139,24 @@ function sampleHandler() {
 
 
 /**
- * Functions to run when page is first visited.
+ * Initialize the page.
  */
 function init() {
-
-    // Fill first dropdown with volunteer IDs
-    fillSelect();
-
-    // Plot first option on visit
-    sampleHandler();
-    metadataHandler();
+    fillSelect(); // fill sample dropdown menu with volunteer IDs
+    sampleHandler(); // plot first sample on visit
+    metadataHandler(); // plot first metadata feature on visit
 }
 
 
 // Initialize variable to store data
 var data;
 
-d3.json("samples.json").then(response => {
+d3.json('samples.json').then(response => {
+    console.log(response);
+    data = response; // store data
+    init(); // initialize page
 
-    // Store data
-    data = response;
-    console.log(data);
-
-    // Initialize page
-    init();
-
-    // Event listener for any change to the sample select input
-    d3.select("#sample").on("change", sampleHandler);
-
-    // Event listener for any change to the metadata select input
-    d3.select("#metadata").on("change", metadataHandler);
+    // Event listeners
+    d3.select("#sample").on("change", sampleHandler); // on change to the sample select input
+    d3.select("#metadata").on("change", metadataHandler); // on change to the metadata select input
 });
