@@ -29,10 +29,16 @@ function plotSample(sampId, wfreq) {
     let x = sample['sample_values'].slice(0, 10).reverse(); // species counts
 
     // Bubble chart for all OTUs in the sample
-    bubble_layout = {title: 'Sample OTUs', xaxis: {title: 'OID'}, yaxis: {title: 'Count'}};
+    bubble_layout = {
+        title: 'Sample OTUs', 
+        xaxis: {title: 'OID'}, 
+        yaxis: {title: 'Count'}, 
+        hovermode: 'closest'
+    };
     bubble_trace = {
         x: sample['otu_ids'], 
         y: sample['sample_values'], 
+        text: sample['otu_labels'].map(lab => lab.replaceAll(';', ' | ')),
         mode: 'markers', 
         marker: {
             color: sample['sample_values'], 
