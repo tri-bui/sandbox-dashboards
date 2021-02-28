@@ -1,40 +1,28 @@
 /**
- * Clean a value in the data to be consistent depending on the feature.
- * @param {str or numeric} val - data value to clean
- * @param {str} feat - ethnicity, gender, age, location, or wfreq
- * @returns {str or numeric} cleaned data value
+ * Clean a value to be consistent depending on the metadata feature.
+ * @param {str or num} val - metadata value to clean
+ * @param {str} feat - ethnicity, gender, age, location, bbtype, or wfreq
+ * @returns {str or num} cleaned metadata value
  */
 function cleanValue(val, feat) {
 
-    // Convert null values to -1 if numeric or "Missing" otherwise
-      if (!val) { 
+    // Convert null values to "Unknown"
+    if (!val) { 
         val = "Unknown";
 
     // Capitalize gender and bbtype
     } else if (feat == "gender" | feat == "bbtype") {
-        if (val.length == 1) {
-            val = val.toUpperCase();
-        } else {
-            val = val[0].toUpperCase() + val.slice(1);
-        }
+        val = val[0].toUpperCase() + val.slice(1);
 
     // Clean ethnicity
     } else if (feat == "ethnicity") { 
-
-        // Remove content inside parenthesis
-        val = val.split("(")[0];
-
-        // Update multiple ethnicities to "mixed"
-        if (val.includes("/")) {
-            val = "Mixed";
-        };
+        val = val.split("(")[0]; // remove content inside parentheses
+        if (val.includes("/")) {val = "Mixed";}; // update multiple ethnicities to "mixed"
 
     // Shorten location to US state or foreign country code
     } else if (feat == "location") {
         val = val.match(/[A-Z]{2}/); // extract 2 capital letters
-        if (val) {
-            val = val[0]; // get matched string
-        };
+        if (val) {val = val[0];}; // get matched string
     };
 
     return val;
